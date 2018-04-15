@@ -57,6 +57,11 @@ public class PluginConfigImpl implements AgentPluginConfig {
   private static final String USE_DEFAULT_CHARSET = "teamcity.git.useDefaultCharset";
   private static final String GIT_OUTPUT_CHARSET = "teamcity.git.outputCharset";
 
+  public static final String ENV_AUTHOR = "BUILD_VCS_AUTHOR";
+  public static final String ENV_EMAIL = "BUILD_VCS_EMAIL";
+  public static final String ENV_TIMESTAMP = "BUILD_VCS_TIMESTAMP";
+  public static final String ENV_SUBJECT = "BUILD_VCS_SUBJECT";
+
   private final BuildAgentConfiguration myAgentConfig;
   private final AgentRunningBuild myBuild;
   private final GitExec myGitExec;

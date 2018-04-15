@@ -162,6 +162,7 @@ public class UpdaterImpl implements Updater {
       removeRefLocks(new File(myTargetDirectory, ".git"));
       doFetch();
       updateSources();
+      getLastCommitInfo();
     } finally {
       myLogger.activityFinished(message, GitBuildProgressLogger.GIT_PROGRESS_ACTIVITY);
     }
@@ -172,6 +173,12 @@ public class UpdaterImpl implements Updater {
     LOG.debug("Updating " + myRoot.debugInfo());
   }
 
+  private void getLastCommitInfo() {
+    myBuild.addSharedEnvironmentVariable(PluginConfigImpl.ENV_AUTHOR, getAuthor(myTargetDirectory, myRevision));
+    myBuild.addSharedEnvironmentVariable(PluginConfigImpl.ENV_EMAIL, getEmail(myTargetDirectory, myRevision));
+    myBuild.addSharedEnvironmentVariable(PluginConfigImpl.ENV_TIMESTAMP, getTimestamp(myTargetDirectory, myRevision));
+    myBuild.addSharedEnvironmentVariable(PluginConfigImpl.ENV_SUBJECT, getSubject(myTargetDirectory, myRevision));
+  }
 
   private void initGitRepository() throws VcsException {
     if (!new File(myTargetDirectory, ".git").exists()) {
@@ -680,6 +687,38 @@ public class UpdaterImpl implements Updater {
     return myGitFactory.create(repositoryDir).log()
       .setCommitsNumber(1)
       .setPrettyFormat("%H%x20%s")
+      .setStartPoint(revision)
+      .call();
+  }
+
+  private String getAuthor(@NotNull File repositoryDir, @NotNull String revision) {
+    return myGitFactory.create(repositoryDir).log()
+      .setCommitsNumber(1)
+      .setPrettyFormat("%an")
+      .setStartPoint(revision)
+      .call();
+  }
+
+  private String getEmail(@NotNull File repositoryDir, @NotNull String revision) {
+    return myGitFactory.create(repositoryDir).log()
+      .setCommitsNumber(1)
+      .setPrettyFormat("%ae")
+      .setStartPoint(revision)
+      .call();
+  }
+
+  private String getTimestamp(@NotNull File repositoryDir, @NotNull String revision) {
+    return myGitFactory.create(repositoryDir).log()
+      .setCommitsNumber(1)
+      .setPrettyFormat("%at")
+      .setStartPoint(revision)
+      .call();
+  }
+
+  private String getSubject(@NotNull File repositoryDir, @NotNull String revision) {
+    return myGitFactory.create(repositoryDir).log()
+      .setCommitsNumber(1)
+      .setPrettyFormat("%s")
       .setStartPoint(revision)
       .call();
   }
